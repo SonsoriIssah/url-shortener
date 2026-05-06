@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Shortener</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg: #f0ede8;
+            --card-bg: #ffffff;
+            --text-primary: #1a1814;
+            --text-secondary: #6b6760;
+            --accent: #1a1814;
+            --accent-text: #ffffff;
+            --border: rgba(0,0,0,0.1);
+            --input-bg: #f7f5f2;
+            --success-bg: #e8f5f0;
+            --success-text: #0f6e56;
+            --error-bg: #fcebeb;
+            --error-text: #a32d2d;
+            --tag-bg: #f0ede8;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .wordmark {
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: 13px;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            margin-bottom: 3rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .wordmark-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--text-primary);
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            border: 0.5px solid var(--border);
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 560px;
+        }
+
+        .card-eyebrow {
+            font-family: 'Syne', sans-serif;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .card-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1.2;
+            margin-bottom: 2rem;
+        }
+
+        .card-title span {
+            display: block;
+            font-weight: 400;
+            font-size: 14px;
+            font-family: 'DM Sans', sans-serif;
+            color: var(--text-secondary);
+            margin-top: 6px;
+            letter-spacing: 0;
+            text-transform: none;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 10px;
+            align-items: stretch;
+        }
+
+        .url-input {
+            flex: 1;
+            background: var(--input-bg);
+            border: 0.5px solid var(--border);
+            border-radius: 12px;
+            padding: 0 16px;
+            height: 52px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            color: var(--text-primary);
+            outline: none;
+            transition: border-color 0.15s;
+        }
+
+        .url-input::placeholder { color: var(--text-secondary); }
+        .url-input:focus { border-color: rgba(0,0,0,0.25); }
+
+        .shorten-btn {
+            background: var(--accent);
+            color: var(--accent-text);
+            border: none;
+            border-radius: 12px;
+            padding: 0 22px;
+            height: 52px;
+            font-family: 'Syne', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: opacity 0.15s, transform 0.1s;
+        }
+
+        .shorten-btn:hover { opacity: 0.85; }
+        .shorten-btn:active { transform: scale(0.98); }
+
+        .result-box {
+            margin-top: 1.25rem;
+            border-radius: 12px;
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .result-box.success {
+            background: var(--success-bg);
+        }
+
+        .result-box.error {
+            background: var(--error-bg);
+        }
+
+        .result-label {
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 3px;
+        }
+
+        .result-box.success .result-label { color: var(--success-text); }
+        .result-box.error .result-label { color: var(--error-text); }
+
+        .result-link {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--success-text);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .result-box.error .result-link {
+            color: var(--error-text);
+            font-size: 14px;
+        }
+
+        .copy-btn {
+            background: transparent;
+            border: 0.5px solid rgba(15,110,86,0.3);
+            border-radius: 8px;
+            padding: 6px 12px;
+            font-size: 12px;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 500;
+            color: var(--success-text);
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background 0.15s;
+            flex-shrink: 0;
+        }
+
+        .copy-btn:hover { background: rgba(15,110,86,0.08); }
+
+        .divider {
+            height: 0.5px;
+            background: var(--border);
+            margin: 1.75rem 0;
+        }
+
+        .stats-row {
+            display: flex;
+            gap: 0;
+        }
+
+        .stat {
+            flex: 1;
+            text-align: center;
+            padding: 0 1rem;
+            border-right: 0.5px solid var(--border);
+        }
+
+        .stat:first-child { padding-left: 0; }
+        .stat:last-child { border-right: none; padding-right: 0; }
+
+        .stat-number {
+            font-family: 'Syne', sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+            display: block;
+        }
+
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="wordmark">
+    <div class="wordmark-dot"></div>
+    ShortURL
+</div>
+
+<div class="card">
+    <p class="card-eyebrow">Free URL Shortener</p>
+    <h1 class="card-title">
+        Shorten your link
+        <span>Paste any long URL and get a clean short link instantly.</span>
+    </h1>
+
+    <form method="POST" action="/submit" id="shortener-form">
+        <div class="input-row">
+            <input
+                type="text"
+                name="url"
+                class="url-input"
+                placeholder="https://your-long-url.com/goes-here"
+                id="url-input"
+                autocomplete="off"
+            >
+            <button type="submit" class="shorten-btn">Shorten →</button>
+        </div>
+    </form>
+
+    {% if short_code %}
+    <div class="result-box success" id="result-box">
+        <div>
+            <p class="result-label">Your short link</p>
+            <a class="result-link" href="/{{ short_code }}" target="_blank">
+                localhost:5000/{{ short_code }}
+            </a>
+        </div>
+        <button class="copy-btn" onclick="copyLink('{{ short_code }}')">Copy</button>
+    </div>
+    {% endif %}
+
+    {% if error %}
+    <div class="result-box error">
+        <div>
+            <p class="result-label">Error</p>
+            <p class="result-link">{{ error }}</p>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="divider"></div>
+
+    <div class="stats-row">
+        <div class="stat">
+            <span class="stat-number">{{ total_urls or 0 }}</span>
+            <span class="stat-label">Links shortened</span>
+        </div>
+        <div class="stat">
+            <span class="stat-number">8</span>
+            <span class="stat-label">Char short code</span>
+        </div>
+        <div class="stat">
+            <span class="stat-number">∞</span>
+            <span class="stat-label">No expiry</span>
+        </div>
+    </div>
+</div>
+
+<script>
+function copyLink(code) {
+    navigator.clipboard.writeText('localhost:5000/' + code).then(() => {
+        const btn = document.querySelector('.copy-btn');
+        if (btn) { btn.textContent = 'Copied!'; setTimeout(() => btn.textContent = 'Copy', 2000); }
+    });
+}
+</script>
+
+</body>
+</html>
