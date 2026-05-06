@@ -267,11 +267,11 @@
     <div class="result-box success" id="result-box">
         <div>
             <p class="result-label">Your short link</p>
-            <a class="result-link" href="/{{ short_code }}" target="_blank">
-                localhost:5000/{{ short_code }}
+            <a class="result-link" href="{{ short_url }}" target="_blank">
+                {{ short_url }}
             </a>
         </div>
-        <button class="copy-btn" onclick="copyLink('{{ short_code }}')">Copy</button>
+        <button class="copy-btn" onclick="copyLink('{{ short_url }}')">Copy</button>
     </div>
     {% endif %}
 
@@ -303,8 +303,8 @@
 </div>
 
 <script>
-function copyLink(code) {
-    navigator.clipboard.writeText('localhost:5000/' + code).then(() => {
+function copyLink(url) {
+    navigator.clipboard.writeText(url).then(() => {
         const btn = document.querySelector('.copy-btn');
         if (btn) { btn.textContent = 'Copied!'; setTimeout(() => btn.textContent = 'Copy', 2000); }
     });

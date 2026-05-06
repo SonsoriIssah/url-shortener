@@ -39,7 +39,9 @@ def submit():
       new = Url(original_url = url,short_code = short)
       db.session.add(new)
       db.session.commit()
-      return render_template('submit.html', short_code=short, total_urls=total_urls)
+      base_url = request.host_url.rstrip('/')
+      short_url = f"{base_url}/{short}"
+      return render_template('submit.html', short_code=short, short_url=short_url, total_urls=total_urls)
    return render_template('submit.html', total_urls=total_urls)
    
 @app.route('/<short_code>') 
