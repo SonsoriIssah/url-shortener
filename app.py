@@ -25,7 +25,7 @@ def generate_short_code():
 
 @app.route('/')
 def home():
-   return render_template(url_for('home.html',name ='Sonsori',urls=['youtube.come','google.com','hello.com']))
+   return render_template(url_for('submit.html'))
 
 @app.route('/submit', methods = ['GET','POST'])
 def submit():
