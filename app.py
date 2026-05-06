@@ -1,12 +1,13 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 import random, string
 import os
 from dotenv import load_dotenv
 
 load_dotenv()
+
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'postgresql://postgres:qwerty123@localhost/url_shortener')
 db = SQLAlchemy(app)
 
 class Url(db.Model):
@@ -22,12 +23,11 @@ def generate_short_code():
    chararcters = string.ascii_letters + string.digits
    return ''.join(random.choices(chararcters,k=8))
 
-
-@app.route('/home')
+@app.route('/')
 def home():
-   return render_template('home.html',name ='Sonsori',urls=['youtube.come','google.com','hello.com'])
+   return render_template(url_for('home.html',name ='Sonsori',urls=['youtube.come','google.com','hello.com']))
 
-@app.route('/', methods = ['GET','POST'])
+@app.route('/submit', methods = ['GET','POST'])
 def submit():
    total_urls = Url.query.count()
    if request.method == 'POST':
