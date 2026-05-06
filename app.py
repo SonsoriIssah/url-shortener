@@ -22,12 +22,12 @@ def generate_short_code():
    chararcters = string.ascii_letters + string.digits
    return ''.join(random.choices(chararcters,k=8))
 
-@app.route('/')
+
 @app.route('/home')
 def home():
    return render_template('home.html',name ='Sonsori',urls=['youtube.come','google.com','hello.com'])
 
-@app.route('/submit', methods = ['GET','POST'])
+@app.route('/', methods = ['GET','POST'])
 def submit():
    total_urls = Url.query.count()
    if request.method == 'POST':
